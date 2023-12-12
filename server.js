@@ -3,11 +3,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const config = require("./config");
 const traficRoutes = require("./routes/traficRoutes");
+const commentairesRoutes = require("./routes/commentairesRoutes");
+const utilisateursRoutes = require("./routes/utilisateursRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 3000; // Use process.env.PORT if specified, otherwise use 3000
+const port = process.env.PORT || 3000;
 
 // Middleware pour traiter les requêtes JSON
 app.use(express.json());
@@ -17,7 +19,8 @@ app.use(authMiddleware.authenticateUser);
 
 // Routes
 app.use("/trafic", traficRoutes);
-
+app.use("/commentaires", commentairesRoutes);
+app.use("/utilisateurs", utilisateursRoutes);
 // Connection to MongoDB
 const connect = async () => {
   try {
@@ -43,4 +46,3 @@ app.listen(port, () => {
 mongoose.connection.on("disconnected", () => {
   console.log("MongoDB disconnected!");
 });
-
