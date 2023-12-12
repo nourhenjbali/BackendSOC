@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const config = require("./config");
@@ -6,21 +5,25 @@ const traficRoutes = require("./routes/traficRoutes");
 const commentairesRoutes = require("./routes/commentairesRoutes");
 const utilisateursRoutes = require("./routes/utilisateursRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
+const soap = require("soap");
+const fs = require("fs");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware pour traiter les requêtes JSON
+// Middleware to process JSON requests
 app.use(express.json());
 
-// Middleware d'authentification global
+// Global authentication middleware
 app.use(authMiddleware.authenticateUser);
 
 // Routes
 app.use("/trafic", traficRoutes);
 app.use("/commentaires", commentairesRoutes);
 app.use("/utilisateurs", utilisateursRoutes);
+
 // Connection to MongoDB
 const connect = async () => {
   try {
@@ -37,9 +40,24 @@ const connect = async () => {
 // Call the connect function
 connect();
 
-// Lancer le serveur
+// Create a SOAP server
+const myService = {
+  MyFunction: function (args) {
+    // Implement your SOAP function logic here
+    return { output: `Hello, ${args.input}!` };
+  },
+};
+
+// Read the WSDL content from the local file
+const wsdlPath = path.join(__dirname, "soapService.wsdl");
+const wsdlContent = fs.readFileSync(wsdlPath, "utf8");
+
+// Create the SOAP server
+const soapServer = soap.listen(app, "/soapService", myService, wsdlContent);
+
+// Launch the server
 app.listen(port, () => {
-  console.log(`Serveur en cours d'exécution sur http://localhost:${port}`);
+  console.log(`Server is running at http://localhost:${port}`);
 });
 
 // Handle MongoDB disconnection
