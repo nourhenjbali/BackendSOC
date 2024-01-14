@@ -14,7 +14,6 @@ const commentaireSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Autres champs si nécessaire...
 });
 
 const Commentaire = mongoose.model("Commentaire", commentaireSchema);

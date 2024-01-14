@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const utilisateursController = require('../controllers/utilisateursController');
 
 const app = express();
-const port = 3001; // Choisissez un port différent de celui de votre serveur principal
-
+const port = 3001; 
 // Middleware pour analyser le corps des requêtes JSON
 app.use(bodyParser.json());
 

@@ -10,7 +10,6 @@ const infoTraficSchema = new mongoose.Schema({
         enum: ['normal', 'embouteillage', 'accident'],
         default: 'normal'
     },
-    // Autres champs si nécessaire...
 });
 
 const InfoTrafic = mongoose.model('InfoTrafic', infoTraficSchema);

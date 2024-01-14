@@ -1,7 +1,7 @@
 const http = require("http");
 const soap = require("soap");
 const fs = require("fs");
-const path = require("path"); // Add this line
+const path = require("path"); 
 
 const MyFunction = async (args) => {
   console.log("MyFunction called with arguments:", args);
@@ -14,7 +14,7 @@ const GetTrafficInfo = async (args) => {
 };
 
 const getSoapData = async () => {
-  const wsdlPath = path.join(__dirname, "soapService.wsdl"); // Use path.join
+  const wsdlPath = path.join(__dirname, "soapService.wsdl"); 
   const wsdlContent = fs.readFileSync(wsdlPath, "utf8");
 
   try {
