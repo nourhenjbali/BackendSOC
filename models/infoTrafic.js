@@ -1,10 +1,18 @@
-// models/infoTrafic.js
 const mongoose = require('mongoose');
 
-const traficSchema = new mongoose.Schema({
-  state: { type: String, required: true },
+const infoTraficSchema = new mongoose.Schema({
+    localisation: {
+        type: String,
+        required: true
+    },
+    etat: {
+        type: String,
+        enum: ['normal', 'embouteillage', 'accident'],
+        default: 'normal'
+    },
+    // Autres champs si nécessaire...
 });
 
-const Trafic = mongoose.model('Trafic', traficSchema);
+const InfoTrafic = mongoose.model('InfoTrafic', infoTraficSchema);
 
-module.exports = Trafic;
+module.exports = InfoTrafic;

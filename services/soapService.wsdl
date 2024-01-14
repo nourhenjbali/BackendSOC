@@ -1,0 +1,70 @@
+<definitions name="soapService"
+  targetNamespace="http://example.com/soap"
+  xmlns:tns="http://example.com/soap"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Définition du type de données pour les informations sur le trafic -->
+  <xsd:complexType name="TrafficInfoType">
+    <xsd:sequence>
+      <!-- Définir les champs nécessaires pour les informations sur le trafic -->
+      <xsd:element name="location" type="xsd:string"/>
+      <xsd:element name="status" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Message pour l'opération MyFunction -->
+  <message name="MyFunctionRequest">
+    <part name="input" type="xsd:string"/>
+  </message>
+  <message name="MyFunctionResponse">
+    <part name="output" type="xsd:string"/>
+  </message>
+
+  <!-- Message pour l'opération GetTrafficInfo -->
+  <message name="GetTrafficInfoRequest"/>
+  <message name="GetTrafficInfoResponse">
+    <part name="trafficInfo" type="tns:TrafficInfoType"/>
+  </message>
+
+  <!-- PortType pour les opérations -->
+  <portType name="MySoapPortType">
+    <operation name="MyFunction">
+      <input message="tns:MyFunctionRequest"/>
+      <output message="tns:MyFunctionResponse"/>
+    </operation>
+    <operation name="GetTrafficInfo">
+      <input message="tns:GetTrafficInfoRequest"/>
+      <output message="tns:GetTrafficInfoResponse"/>
+    </operation>
+  </portType>
+
+  <binding name="MySoapBinding" type="tns:MySoapPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="MyFunction">
+      <soap:operation soapAction="http://example.com/soap/MyFunction"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetTrafficInfo">
+      <soap:operation soapAction="http://example.com/soap/GetTrafficInfo"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+
+  <!-- Service -->
+  <service name="soapService">
+    <port name="MySoapPort" binding="tns:MySoapBinding">
+      <soap:address location="http://localhost:3002/soap-endpoint"/>
+    </port>
+  </service>
+</definitions>

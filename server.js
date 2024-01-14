@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const config = require("./config");
@@ -5,6 +6,9 @@ const traficRoutes = require("./routes/traficRoutes");
 const commentairesRoutes = require("./routes/commentairesRoutes");
 const utilisateursRoutes = require("./routes/utilisateursRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
+const restService = require("./services/restService");
+const bodyParser = require("body-parser");
+const soapService = require('./services/soapService'); // Adjust the path accordingly
 const soap = require("soap");
 const fs = require("fs");
 const path = require("path");
@@ -24,6 +28,24 @@ app.use("/trafic", traficRoutes);
 app.use("/commentaires", commentairesRoutes);
 app.use("/utilisateurs", utilisateursRoutes);
 
+const wsdlPath = "./services/soapService.wsdl";
+// Route for fetching SOAP data
+app.get("/soap-data", async (req, res) => {
+  try {
+    const soapData = await soapService.getSoapData();
+    res.json({ success: true, data: soapData });
+  } catch (error) {
+    console.error("Error while fetching SOAP data:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+      details: error.message,
+    });
+  }
+});
+
+// service REST
+app.use("/utilisateurs-service", restService);
 // Connection to MongoDB
 const connect = async () => {
   try {
@@ -39,21 +61,6 @@ const connect = async () => {
 
 // Call the connect function
 connect();
-
-// Create a SOAP server
-const myService = {
-  MyFunction: function (args) {
-    // Implement your SOAP function logic here
-    return { output: `Hello, ${args.input}!` };
-  },
-};
-
-// Read the WSDL content from the local file
-const wsdlPath = path.join(__dirname, "soapService.wsdl");
-const wsdlContent = fs.readFileSync(wsdlPath, "utf8");
-
-// Create the SOAP server
-const soapServer = soap.listen(app, "/soapService", myService, wsdlContent);
 
 // Launch the server
 app.listen(port, () => {

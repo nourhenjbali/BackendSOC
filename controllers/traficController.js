@@ -1,28 +1,64 @@
-// controllers/traficController.js
-const Trafic = require('../models/infoTrafic');
+const InfoTrafic = require('../models/infoTrafic');
 
-const getTraficInfo = async (req, res) => {
-  try {
-    const traficInfo = await Trafic.find();
-    res.json(traficInfo);
-  } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des informations de trafic.' });
-  }
+const traficController = {
+    getAllInfosTrafic: async (req, res) => {
+        try {
+            const infosTrafic = await InfoTrafic.find();
+            res.json(infosTrafic);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
+
+    getInfoTraficById: async (req, res) => {
+        // Récupérer l'id à partir des paramètres de la requête
+        const { id } = req.params;
+        try {
+            const infoTrafic = await InfoTrafic.findById(id);
+            if (!infoTrafic) {
+                return res.status(404).json({ message: "Information de trafic non trouvée" });
+            }
+            res.json(infoTrafic);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
+
+    createInfoTrafic: async (req, res) => {
+        const newInfoTrafic = new InfoTrafic(req.body);
+        try {
+            const savedInfoTrafic = await newInfoTrafic.save();
+            res.status(201).json(savedInfoTrafic);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    },
+
+    updateInfoTrafic: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const updatedInfoTrafic = await InfoTrafic.findByIdAndUpdate(id, req.body, { new: true });
+            if (!updatedInfoTrafic) {
+                return res.status(404).json({ message: "Information de trafic non trouvée" });
+            }
+            res.json(updatedInfoTrafic);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    },
+
+    deleteInfoTrafic: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const deletedInfoTrafic = await InfoTrafic.findByIdAndDelete(id);
+            if (!deletedInfoTrafic) {
+                return res.status(404).json({ message: "Information de trafic non trouvée" });
+            }
+            res.json({ message: "Information de trafic supprimée" });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    }
 };
 
-const updateTraficInfo = async (req, res) => {
-  try {
-    // Logique pour mettre à jour les informations de trafic
-    // Exemple : Mettre à jour l'état du trafic
-    const { trafficState } = req.body;
-    await Trafic.updateOne({}, { $set: { state: trafficState } });
-    res.send('Informations de trafic mises à jour avec succès.');
-  } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la mise à jour des informations de trafic.' });
-  }
-};
-
-module.exports = {
-  getTraficInfo,
-  updateTraficInfo,
-};
+module.exports = traficController;

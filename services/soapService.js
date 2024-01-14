@@ -1,28 +1,62 @@
+const http = require("http");
 const soap = require("soap");
 const fs = require("fs");
-const path = require("path");
+const path = require("path"); // Add this line
+
+const MyFunction = async (args) => {
+  console.log("MyFunction called with arguments:", args);
+  return { result: "Result of MyFunction" };
+};
+
+const GetTrafficInfo = async (args) => {
+  console.log("GetTrafficInfo called with arguments:", args);
+  return { trafficInfo: "Traffic information" };
+};
 
 const getSoapData = async () => {
-  // Update the path to match the actual location of your soapService.wsdl file
-  const wsdlPath = path.join(__dirname, "soapService.wsdl");
+  const wsdlPath = path.join(__dirname, "soapService.wsdl"); // Use path.join
+  const wsdlContent = fs.readFileSync(wsdlPath, "utf8");
 
   try {
-    // Read the WSDL content from the local file
-    const wsdlContent = fs.readFileSync(wsdlPath, "utf8");
-
-    // Create the SOAP client using the local WSDL content
     const client = await soap.createClientAsync(wsdlContent);
-
     if (!client) {
       throw new Error("Unable to create SOAP client");
     }
 
-    // Call your SOAP function (MyFunctionAsync in this case)
-    const result = await client.MyFunctionAsync({});
-    return result;
+    client.MyFunction = MyFunction;
+    client.GetTrafficInfo = GetTrafficInfo;
+
+    const soapserv = http.createServer(function (request, response) {
+      if (request.method === "POST" && request.url === "/soap-endpoint") {
+        // Handle SOAP requests
+        let body = "";
+        request.on("data", (chunk) => {
+          body += chunk;
+        });
+
+        request.on("end", async () => {
+          try {
+            const soapResponse = await client.MySoapPortType.MyFunction(body);
+            response.writeHead(200, { "Content-Type": "text/xml" });
+            response.end(soapResponse);
+          } catch (error) {
+            response.writeHead(500, { "Content-Type": "text/xml" });
+            response.end(`<error>${error.message}</error>`);
+          }
+        });
+      } else {
+        response.writeHead(404, { "Content-Type": "text/plain" });
+        response.end("404: Not Found");
+      }
+    });
+
+    soapserv.listen(3002, function () {
+      console.log(
+        "SOAP server listening on http://localhost:3002/soap-endpoint"
+      );
+    });
   } catch (error) {
-    console.error("Error while fetching SOAP data:", error);
-    throw error;
+    console.error("Error while setting up SOAP server:", error);
   }
 };
 

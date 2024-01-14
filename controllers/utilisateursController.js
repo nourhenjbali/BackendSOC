@@ -1,27 +1,63 @@
-// controllers/utilisateursController.js
 const Utilisateur = require('../models/utilisateur');
 
-const getUtilisateurs = async (req, res) => {
-  try {
-    const utilisateurs = await Utilisateur.find();
-    res.json(utilisateurs);
-  } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des utilisateurs.' });
-  }
+const utilisateursController = {
+    getAllUtilisateurs: async (req, res) => {
+        try {
+            const utilisateurs = await Utilisateur.find();
+            res.json(utilisateurs);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
+
+    getUtilisateurById: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const utilisateur = await Utilisateur.findById(id);
+            if (!utilisateur) {
+                return res.status(404).json({ message: "Utilisateur non trouvé" });
+            }
+            res.json(utilisateur);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
+
+    createUtilisateur: async (req, res) => {
+        const newUtilisateur = new Utilisateur(req.body);
+        try {
+            const savedUtilisateur = await newUtilisateur.save();
+            res.status(201).json(savedUtilisateur);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    },
+
+    updateUtilisateur: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const updatedUtilisateur = await Utilisateur.findByIdAndUpdate(id, req.body, { new: true });
+            if (!updatedUtilisateur) {
+                return res.status(404).json({ message: "Utilisateur non trouvé" });
+            }
+            res.json(updatedUtilisateur);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    },
+
+    deleteUtilisateur: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const deletedUtilisateur = await Utilisateur.findByIdAndDelete(id);
+            if (!deletedUtilisateur) {
+                return res.status(404).json({ message: "Utilisateur non trouvé" });
+            }
+            res.json({ message: "Utilisateur supprimé" });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    }
 };
 
-const createUtilisateur = async (req, res) => {
-  try {
-    const { nom, prenom, email } = req.body;
-    const nouvelUtilisateur = new Utilisateur({ nom, prenom, email });
-    await nouvelUtilisateur.save();
-    res.json({ message: 'Utilisateur créé avec succès.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur.' });
-  }
-};
-
-module.exports = {
-  getUtilisateurs,
-  createUtilisateur,
-};
+module.exports = utilisateursController;

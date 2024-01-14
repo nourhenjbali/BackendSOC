@@ -1,9 +1,12 @@
-// routes/traficRoutes.js
 const express = require('express');
 const router = express.Router();
 const traficController = require('../controllers/traficController');
 
-router.get('/', traficController.getTraficInfo);
-router.put('/', traficController.updateTraficInfo);
+// Get all traffic information
+router.get('/', traficController.getAllInfosTrafic);
+router.get('/:id', traficController.getInfoTraficById); // Add this route
+router.post('/', traficController.createInfoTrafic);
+router.put('/:id', traficController.updateInfoTrafic);
+router.delete('/:id', traficController.deleteInfoTrafic);
 
 module.exports = router;

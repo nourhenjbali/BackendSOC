@@ -1,11 +1,22 @@
-// models/commentaire.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const commentaireSchema = new mongoose.Schema({
-  contenu: { type: String, required: true },
-  utilisateurId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Utilisateur' },
+  utilisateur: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Utilisateur",
+    required: true,
+  },
+  contenu: {
+    type: String,
+    required: true,
+  },
+  localisation: {
+    type: String,
+    required: true,
+  },
+  // Autres champs si nécessaire...
 });
 
-const Commentaire = mongoose.model('Commentaire', commentaireSchema);
+const Commentaire = mongoose.model("Commentaire", commentaireSchema);
 
 module.exports = Commentaire;
