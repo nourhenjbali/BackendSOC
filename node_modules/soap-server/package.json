@@ -1,0 +1,21 @@
+{
+  "name": "soap-server",
+  "version": "0.1.0",
+  "description": "Soap server, using pure javascript.",
+  "main": "./lib/soap-server",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": "https://github.com/tan-tan-kanarek/node-soap-server.git",
+  "keywords": [
+    "Node.js",
+    "Soap",
+    "Server"
+  ],
+  "author": "Johnathan Kanarek",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "xml2js": "0.2.8"
+  }
+}
